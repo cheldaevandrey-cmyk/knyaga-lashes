@@ -139,13 +139,14 @@ nav button:hover:not(.active) { background: var(--pink2); }
 }
 .news-header-line { flex: 1; height: 1px; background: var(--ink); }
 .news-eyebrow {
-  font-family: 'Special Elite', cursive;
-  font-size: 11px;
-  letter-spacing: 2px;
-  color: var(--ink);
-  margin-bottom: 4px;
-  text-transform: uppercase;
-  font-weight: 700;
+  font-family: 'Playfair Display', serif;
+  font-size: 13px;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: 0.3px;
+  color: var(--ink2);
+  margin-bottom: 6px;
+  text-transform: none;
 }
 
 /* ---- CALENDAR ---- */
@@ -162,14 +163,15 @@ nav button:hover:not(.active) { background: var(--pink2); }
   text-transform: uppercase;
 }
 .cal-nav {
-  background: var(--ink); border: none;
-  color: var(--pink); cursor: pointer;
-  width: 28px; height: 28px;
+  background: var(--white); border: 2px solid var(--ink);
+  color: var(--ink); cursor: pointer;
+  width: 30px; height: 30px;
+  border-radius: 50%;
   font-size: 16px; font-weight: 700;
   display: flex; align-items: center; justify-content: center;
-  transition: opacity 0.15s;
+  transition: all 0.15s;
 }
-.cal-nav:hover { opacity: 0.7; }
+.cal-nav:hover { background: var(--ink); color: var(--pink); }
 
 .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
 .cal-day-label {
@@ -182,15 +184,16 @@ nav button:hover:not(.active) { background: var(--pink2); }
   aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
   font-size: 12px; font-weight: 700;
   cursor: pointer; transition: all 0.15s;
-  border: 1px solid transparent;
+  border: 2px solid transparent;
   position: relative;
   font-family: 'DM Sans', sans-serif;
   background: var(--pink3);
+  border-radius: 10px;
 }
-.cal-day:hover:not(.disabled):not(.empty) { background: var(--pink2); border-color: var(--ink); }
+.cal-day:hover:not(.disabled):not(.empty) { background: var(--pink2); border-color: var(--ink); border-radius: 10px; }
 .cal-day.available { color: var(--ink); }
-.cal-day.selected { background: var(--ink); color: var(--pink); border-color: var(--ink); }
-.cal-day.today { border: 2px solid var(--ink); }
+.cal-day.selected { background: var(--ink); color: var(--pink); border-color: var(--ink); border-radius: 10px; }
+.cal-day.today { border: 2px solid var(--ink); border-radius: 10px; }
 .cal-day.disabled { color: var(--ink2); opacity: 0.25; cursor: default; }
 .cal-day.empty { background: transparent; cursor: default; }
 .cal-day.has-slots::after {
@@ -201,14 +204,15 @@ nav button:hover:not(.active) { background: var(--pink2); }
 
 /* ---- SLOTS ---- */
 .slots-label {
-  font-family: 'Special Elite', cursive;
-  font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+  font-family: 'Playfair Display', serif;
+  font-size: 13px; font-style: italic; font-weight: 400;
   color: var(--ink2); margin: 16px 0 8px;
   border-bottom: var(--border-thin); padding-bottom: 4px;
 }
 .slots-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
 .slot-btn {
-  background: var(--white); border: var(--border);
+  background: var(--white); border: 2px solid var(--ink);
+  border-radius: 10px;
   padding: 12px 8px; text-align: center; cursor: pointer;
   font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 700;
   color: var(--ink); transition: all 0.15s;
@@ -292,10 +296,13 @@ nav button:hover:not(.active) { background: var(--pink2); }
 }
 .price-item {
   display: flex; justify-content: space-between; align-items: center;
-  padding: 10px 12px; background: var(--white);
-  border-bottom: var(--border-thin);
-  border-left: var(--border-thin); border-right: var(--border-thin);
+  padding: 12px 16px; background: var(--white);
+  border: 2px solid var(--ink);
+  border-radius: 10px;
+  margin-bottom: 6px;
+  transition: all 0.15s;
 }
+.price-item:hover { background: var(--pink2); }
 .price-name { font-size: 14px; font-weight: 500; }
 .price-desc { font-size: 11px; color: var(--ink2); margin-top: 1px; }
 .price-val { font-size: 14px; font-weight: 700; white-space: nowrap; }
@@ -487,7 +494,7 @@ nav button:hover:not(.active) { background: var(--pink2); }
       <div class="news-header-line"></div>
       <div style="font-family:'Special Elite',cursive;font-size:10px;color:var(--ink2)">Online Booking</div>
     </div>
-    <div class="news-eyebrow" style="font-family:'Special Elite',cursive">Выберите удобный день и время</div>
+    <div class="news-eyebrow" style="font-family:'Playfair Display',serif;font-style:italic">Выберите удобный день и время</div>
 
     <div class="cal-header">
       <button class="cal-nav" onclick="changeMonth(-1)">‹</button>
