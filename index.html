@@ -531,18 +531,17 @@ nav button:hover:not(.active) { background: var(--pink2); }
    DESKTOP LAYOUT (768px+)
    ============================================================ */
 @media (min-width: 768px) {
-  body { background: var(--pink2); }
+  body { background: var(--pink); }
 
   #app {
-    max-width: 1200px;
-    margin: 0 auto;
+    max-width: 100%;
+    margin: 0;
     min-height: 100vh;
     background: var(--pink);
-    box-shadow: 0 0 60px rgba(0,0,0,0.15);
   }
 
   /* Masthead */
-  .masthead { padding: 24px 40px 0; }
+  .masthead { padding: 24px 80px 0; max-width: 1400px; margin: 0 auto; }
   .masthead-title h1 { font-size: 96px; letter-spacing: -3px; }
   .masthead-sub { font-size: 16px; letter-spacing: 4px; }
   .masthead-top { font-size: 13px; padding: 7px 16px; }
@@ -551,15 +550,27 @@ nav button:hover:not(.active) { background: var(--pink2); }
   nav button { font-size: 11px; padding: 14px 24px; letter-spacing: 2px; }
 
   /* Pages */
-  .page { padding: 40px 40px 60px; }
+  .page { padding: 40px 80px 60px; max-width: 1400px; margin: 0 auto; }
 
-  /* Desktop grid для страницы записи */
+  /* Desktop grid для страницы записи — одна широкая колонка */
   #page-booking .desktop-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 40px;
-    align-items: start;
+    display: block;
   }
+
+  /* Календарь на всю ширину */
+  #page-booking .cal-header {
+    max-width: 100%;
+  }
+  #page-booking .cal-grid {
+    max-width: 100%;
+  }
+  #page-booking .cal-grid > div {
+    min-height: 60px;
+    font-size: 16px;
+  }
+  .cal-month { font-size: 18px; }
+  .slots-grid { grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); }
+  .booking-form { max-width: 600px; }
 
   /* О мастере — две колонки */
   .about-desktop {
