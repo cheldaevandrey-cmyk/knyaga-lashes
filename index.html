@@ -1059,13 +1059,23 @@ function showLoader(msg) {
 }
 function hideLoader() { const el = document.getElementById('global-loader'); if (el) el.style.display = 'none'; }
 
+async function fetchWithTimeout(url, options={}, ms=6000) {
+  const ctrl = new AbortController();
+  const id = setTimeout(() => ctrl.abort(), ms);
+  try { const r = await fetch(url, {...options, signal: ctrl.signal}); clearTimeout(id); return r; }
+  catch(e) { clearTimeout(id); throw e; }
+}
 async function loadStore() {
   showLoader('Загрузка...');
   try {
-    const res = await fetch(API);
+    const res = await fetchWithTimeout(API, {}, 6000);
     const data = await res.json();
-    store = data || getDefaultStore();
-    if (!data) await saveCloudStore(store);
+    if (data && data.schedule) {
+      store = data;
+    } else {
+      store = getDefaultStore();
+      await saveCloudStore(store);
+    }
   } catch(e) {
     const raw = localStorage.getItem('crystal_nails_v2');
     store = raw ? JSON.parse(raw) : getDefaultStore();
@@ -1087,9 +1097,9 @@ async function saveStore() {
 }
 async function refreshStore() {
   try {
-    const res = await fetch(API);
+    const res = await fetchWithTimeout(API, {}, 6000);
     const data = await res.json();
-    if (data) {
+    if (data && data.schedule) {
       const myId = store.myBookingId;
       store = data;
       store.myBookingId = myId;
@@ -1221,10 +1231,6 @@ function renderSlots(dk) {
   document.getElementById('slots-section').style.display = 'block';
 }
 function selectTime(time) {
-  if (store.myBookingId) {
-    const ex = store.bookings.find(b => b.id === store.myBookingId && b.status === 'active');
-    if (ex) { showToast('У вас уже есть активная запись', 'error'); return; }
-  }
   selTime = time; renderSlots(selDate); showBookingForm();
 }
 function renderServiceSelector() {
@@ -1277,6 +1283,9 @@ function confirmBooking() {
   if (!selService) { showToast('Выберите процедуру', 'error'); return; }
   if (!name) { showToast('Введите ваше имя', 'error'); return; }
   if (phone.length !== 11) { showToast('Телефон: 11 цифр', 'error'); return; }
+  // Проверка дубля по телефону
+  const existingByPhone = store.bookings.find(b => b.phone === phone && b.status === 'active');
+  if (existingByPhone) { showToast('Вы уже записаны на ' + formatDateRu(existingByPhone.date) + ' ' + existingByPhone.time, 'error'); return; }
   const booked = store.bookings.filter(b => b.date === selDate && b.status === 'active').map(b => b.time);
   if (booked.includes(selTime)) { showToast('Слот занят', 'error'); renderSlots(selDate); return; }
   const svc = SERVICES.find(s => s.id === selService);
