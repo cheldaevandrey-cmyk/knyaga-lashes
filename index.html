@@ -778,8 +778,8 @@ nav button:hover:not(.active) { background: var(--pink2); }
 
     <!-- О себе -->
     <div class="about-bio">
-      Привет! Я — <b>Knyaga</b>, мастер наращивания ресниц. Помогаю каждой клиентке чувствовать себя уверенно и красиво. Работаю с классикой, объёмом, ламинированием — подберу технику под твой образ и образ жизни.<br><br>
-      <i style="color:var(--ink);font-family:'Playfair Display',serif">Ваши ресницы — моё призвание ✦</i>
+      Привет! Я — <b>Настя</b>, мастер по наращиванию и ламинированию, а также профессионал в сфере болтовни. Делаю классику, большие объемы, креативные наращивания и ламинирование!<br><br>
+      <i style="color:var(--ink);font-family:'Playfair Display',serif">Ко мне идут за ресницами и комфортом 🩷</i>
     </div>
 
     <!-- Отзывы -->
@@ -1165,6 +1165,7 @@ function confirmBooking() {
   };
   store.bookings.push(booking); store.myBookingId = booking.id; saveStore();
   sendTelegram(`🌸 <b>Новая запись!</b>\n\n👤 <b>Имя:</b> ${name}\n📞 <b>Телефон:</b> ${phone}\n✈️ <b>Telegram:</b> ${username || '—'}\n📅 <b>Дата:</b> ${formatDateRu(booking.date)}\n🕐 <b>Время:</b> ${booking.time}\n💅 <b>Процедура:</b> ${booking.serviceName} — ${booking.servicePrice}`);
+  sendToSheets({ action: 'add', date: booking.date, time: booking.time, name: booking.name, phone: booking.phone, username: booking.username, serviceName: booking.serviceName, servicePrice: booking.servicePrice });
   selDate = null; selTime = null; selService = null; selLed = false;
   ['input-name','input-phone','input-username'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('slots-section').style.display = 'none';
@@ -1209,7 +1210,7 @@ function renderMyBooking() {
 function cancelMyBooking() {
   if (!confirm('Отменить запись?')) return;
   const booking = store.bookings.find(b => b.id === store.myBookingId);
-  if (booking) { booking.status = 'cancelled'; sendTelegram(`❌ <b>Запись отменена</b>\n\n👤 ${booking.name}\n📅 ${formatDateRu(booking.date)} · ${booking.time}`); }
+  if (booking) { booking.status = 'cancelled'; sendTelegram(`❌ <b>Запись отменена</b>\n\n👤 ${booking.name}\n📅 ${formatDateRu(booking.date)} · ${booking.time}`); sendToSheets({ action: 'cancel', date: booking.date, time: booking.time, name: booking.name }); }
   store.myBookingId = null; saveStore(); renderMyBooking(); showToast('Запись отменена', '');
 }
 
@@ -1344,6 +1345,19 @@ function adminAddWorkDay() {
 
 const TG_TOKEN = '8708027280:AAHTE59Qw9-RqFNe_LyYtPJnPanIMPOw2uU';
 const TG_CHAT  = '804966921';
+const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbxNTO6fZEFzHR6BcU86LuhF4Xd2OVgSz1y53QFevnqj3iZ_hQFF5ZoPlVJb5vigKHSE/exec';
+
+async function sendToSheets(data) {
+  try {
+    await fetch(GOOGLE_SHEET_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+  } catch(e) { console.error('Sheets error:', e); }
+}
+
 async function sendTelegram(text) {
   try { await fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:TG_CHAT,text,parse_mode:'HTML'})}); } catch(e){}
 }
