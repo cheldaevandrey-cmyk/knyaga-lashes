@@ -1085,8 +1085,26 @@ async function saveStore() {
   try { await saveCloudStore(toSave); }
   catch(e) { localStorage.setItem('crystal_nails_v2', JSON.stringify(toSave)); }
 }
+async function refreshStore() {
+  try {
+    const res = await fetch(API);
+    const data = await res.json();
+    if (data) {
+      const myId = store.myBookingId;
+      store = data;
+      store.myBookingId = myId;
+      renderCalendar();
+      if (selDate && store.schedule[selDate]) renderSlots(selDate);
+    }
+  } catch(e) {}
+}
+
 async function initApp() {
   await loadStore(); initCal(); renderCalendar(); renderPrices();
+  setInterval(refreshStore, 30000);
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') refreshStore();
+  });
 }
 
 function showPage(id, btn) {
