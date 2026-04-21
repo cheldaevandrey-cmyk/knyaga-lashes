@@ -1,4 +1,6 @@
-const { getStore } = require('@netlify/blobs');
+const BIN_ID = '69e7a963aaba882197222374';
+const API_KEY = '$2a$10$UYoa8ByDC93c0ieVn6P09e.AelSPScEGxfXFReTubVAy5cwkMx3v6';
+const URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
 exports.handler = async (event) => {
   const headers = {
@@ -12,17 +14,13 @@ exports.handler = async (event) => {
     return { statusCode: 200, headers, body: '' };
   }
 
-  let store;
-  try {
-    store = getStore('knyaga');
-  } catch (e) {
-    return { statusCode: 500, headers, body: JSON.stringify({ error: 'Store init failed: ' + e.message }) };
-  }
-
   if (event.httpMethod === 'GET') {
     try {
-      const data = await store.get('data', { type: 'json' });
-      return { statusCode: 200, headers, body: JSON.stringify(data ?? null) };
+      const res = await fetch(`${URL}/latest`, {
+        headers: { 'X-Master-Key': API_KEY }
+      });
+      const json = await res.json();
+      return { statusCode: 200, headers, body: JSON.stringify(json.record ?? null) };
     } catch (e) {
       return { statusCode: 200, headers, body: JSON.stringify(null) };
     }
@@ -31,7 +29,12 @@ exports.handler = async (event) => {
   if (event.httpMethod === 'POST') {
     try {
       const data = JSON.parse(event.body);
-      await store.setJSON('data', data);
+      const res = await fetch(URL, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
+        body: JSON.stringify(data)
+      });
+      const json = await res.json();
       return { statusCode: 200, headers, body: JSON.stringify({ ok: true }) };
     } catch (e) {
       return { statusCode: 500, headers, body: JSON.stringify({ error: e.message }) };
