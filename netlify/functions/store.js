@@ -1,4 +1,4 @@
- const { getStore } = require('@netlify/blobs');
+const { getStore } = require('@netlify/blobs');
 
 exports.handler = async (event) => {
   const store = getStore('knyaga-store');
@@ -38,4 +38,5 @@ exports.handler = async (event) => {
   }
 
   return { statusCode: 405, body: 'Method not allowed' };
-};
+}; 
+ 
