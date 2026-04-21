@@ -1,5 +1,5 @@
 const BIN_ID = '69e7a963aaba882197222374';
-const API_KEY = '$2a$10$UYoa8ByDC93c0ieVn6P09e.AelSPScEGxfXFReTubVAy5cwkMx3v6';
+const API_KEY = '$2a$10$INS.MvzJLOTR19Lc3.hiJuGm.RQ7xeA323aNp2ZOAvGlPzSKViuEW';
 const BIN_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
 export const config = { api: { bodyParser: true } };
