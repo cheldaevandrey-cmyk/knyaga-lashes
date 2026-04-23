@@ -29,7 +29,7 @@ export default async function handler(req, res) {
 
     const data = await response.json();
     const text = data.content?.[0]?.text || '';
-    const result = JSON.parse(text.replace(/```json|```/g, '').trim());
+    const result = JSON.parse(text.replace(/\`\`\`json|\`\`\`/g, '').trim());
     return res.status(200).json(result);
   } catch(e) {
     return res.status(500).json({ error: e.message });
