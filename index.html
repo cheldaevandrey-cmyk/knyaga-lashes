@@ -1326,11 +1326,7 @@ function confirmBooking() {
     <div class="card" style="margin-bottom:8px"><div class="card-label">Дата и время</div><div class="card-value highlight">${formatDateRu(booking.date)} · ${booking.time}</div></div>
     <div class="card" style="margin-bottom:8px"><div class="card-label">Процедура</div><div class="card-value">${booking.serviceName} — ${booking.servicePrice}</div></div>
     <div class="card" style="margin-bottom:8px"><div class="card-label">Клиент</div><div class="card-value">${name}</div><div style="font-size:13px;color:var(--ink2);margin-top:3px">${phone}</div></div>
-    <div class="card" style="margin-bottom:8px;background:var(--pink3)">
-      <div class="card-label">🔔 Напоминание в Telegram</div>
-      <p style="font-size:12px;color:var(--ink2);margin:6px 0 10px;line-height:1.6">Получите напоминание за 24 часа до записи</p>
-      <a href="${botLink}" target="_blank" style="display:block;text-align:center;padding:11px;background:var(--ink);color:var(--pink);text-decoration:none;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase">✈ Подписаться</a>
-    </div>
+
     <button class="btn-primary" onclick="closeModal()">Отлично!</button>
   `);
 }
@@ -1515,12 +1511,48 @@ async function sendTelegram(text) {
 
 // ============ AI QUIZ ============
 const QUIZ_QUESTIONS = [
-  { q: "Какой образ ты обычно создаёшь?", opts: ["Натуральный, «без макияжа»","Женственный и романтичный","Яркий и дерзкий","Элегантный и сдержанный"] },
-  { q: "Сколько времени на макияж утром?", opts: ["0–5 минут","15–30 минут","30–60 минут","По-разному"] },
-  { q: "Как относишься к уходу за ресницами?", opts: ["Хочу забыть и не думать","Готова чуть-чуть следить","Буду расчёсывать каждый день","Главное — результат!"] },
-  { q: "Какой эффект нравится?", opts: ["Как свои, но лучше","Пышные и воздушные","Максимальный объём","Ухоженные и блестящие"] },
-  { q: "Твой стиль жизни:", opts: ["Работа, минимум суеты","Активная — спорт, прогулки","Тусовки, события, фото","Разный — офис и вечеринки"] },
+  { q: "Какой образ ты обычно создаёшь?", opts: [
+    { t: "Натуральный, «без макияжа»", s: {classic:3,lami:2,wispy:0,volume:0} },
+    { t: "Женственный и романтичный", s: {classic:1,lami:1,wispy:3,volume:1} },
+    { t: "Яркий и дерзкий", s: {classic:0,lami:0,wispy:1,volume:3} },
+    { t: "Элегантный и сдержанный", s: {classic:2,lami:3,wispy:1,volume:0} }
+  ]},
+  { q: "Сколько времени на макияж утром?", opts: [
+    { t: "0–5 минут", s: {classic:2,lami:3,wispy:1,volume:0} },
+    { t: "15–30 минут", s: {classic:3,lami:1,wispy:2,volume:1} },
+    { t: "30–60 минут", s: {classic:1,lami:0,wispy:2,volume:3} },
+    { t: "По-разному", s: {classic:1,lami:1,wispy:3,volume:1} }
+  ]},
+  { q: "Как относишься к уходу за ресницами?", opts: [
+    { t: "Хочу забыть и не думать", s: {classic:2,lami:3,wispy:1,volume:0} },
+    { t: "Готова чуть-чуть следить", s: {classic:3,lami:2,wispy:2,volume:1} },
+    { t: "Буду расчёсывать каждый день", s: {classic:1,lami:1,wispy:3,volume:2} },
+    { t: "Главное — результат!", s: {classic:0,lami:0,wispy:1,volume:3} }
+  ]},
+  { q: "Какой эффект нравится?", opts: [
+    { t: "Как свои, но лучше", s: {classic:3,lami:2,wispy:0,volume:0} },
+    { t: "Пышные и воздушные", s: {classic:0,lami:0,wispy:3,volume:2} },
+    { t: "Максимальный объём", s: {classic:0,lami:0,wispy:1,volume:3} },
+    { t: "Ухоженные и блестящие", s: {classic:1,lami:3,wispy:1,volume:0} }
+  ]},
+  { q: "Твой стиль жизни:", opts: [
+    { t: "Работа, минимум суеты", s: {classic:3,lami:2,wispy:1,volume:0} },
+    { t: "Активная — спорт, прогулки", s: {classic:2,lami:3,wispy:1,volume:0} },
+    { t: "Тусовки, события, фото", s: {classic:0,lami:0,wispy:2,volume:3} },
+    { t: "Разный — офис и вечеринки", s: {classic:1,lami:1,wispy:3,volume:1} }
+  ]},
 ];
+
+const QUIZ_RESULTS = {
+  classic: { procedure: "Классика", emoji: "✨", serviceId: "classic",
+    personal: "Классика — идеальный выбор для тебя! Она создаёт естественный, ухоженный вид без лишних усилий. Ты будешь выглядеть свежо каждый день, не тратя время на макияж." },
+  lami: { procedure: "Ламинирование ресниц", emoji: "🌿", serviceId: "lami_base",
+    personal: "Ламинирование — именно то, что тебе нужно! Оно подчеркнёт твои натуральные ресницы, сделав их пышнее и темнее без наращивания. Идеально для активного образа жизни." },
+  wispy: { procedure: "Виспи / Аниме", emoji: "🦋", serviceId: "creative",
+    personal: "Виспи созданы для тебя! Игривые пучки и пушистый эффект подчеркнут твою женственность и романтичность. Это именно тот взгляд, который не останется незамеченным." },
+  volume: { procedure: "4D объём", emoji: "🔥", serviceId: "4d",
+    personal: "Тебе нужен максимальный объём! 4D наращивание создаст насыщенный, дерзкий образ, который идеально подходит для яркой жизни и запоминающихся фото." }
+};
 
 const SERVICE_MAP = {
   "Классика": "classic", "2D объём": "2d", "3D объём": "3d",
@@ -1543,7 +1575,7 @@ function renderQuizStep() {
   container.innerHTML = '<div style="margin:12px 0 8px"><div style="height:3px;background:var(--pink2);border:1px solid var(--ink)"><div id="qpbar" style="height:100%;width:' + progress + '%;background:var(--ink);transition:width 0.4s"></div></div><div style="font-size:10px;color:var(--ink2);margin-top:4px;font-weight:700;letter-spacing:1px">' + (quizStep+1) + ' / ' + QUIZ_QUESTIONS.length + '</div></div><div style="font-family:\'Playfair Display\',serif;font-size:18px;font-weight:700;margin:14px 0 16px;line-height:1.4">' + q.q + '</div><div id="quiz-opts-container" style="display:flex;flex-direction:column;gap:8px"></div>';
   q.opts.forEach(function(opt) {
     var btn = document.createElement('button');
-    btn.textContent = opt;
+    btn.textContent = opt.t;
     btn.style.cssText = "background:var(--white);border:2px solid var(--ink);border-radius:10px;padding:13px 16px;text-align:left;font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;width:100%";
     btn.onmouseover = function(){ this.style.background='var(--pink2)'; };
     btn.onmouseout = function(){ this.style.background='var(--white)'; };
@@ -1551,47 +1583,29 @@ function renderQuizStep() {
     document.getElementById('quiz-opts-container').appendChild(btn);
   });
 }
-function quizAnswer(answer, btn) {
+function quizAnswer(opt, btn) {
   btn.style.background = "var(--ink)"; btn.style.color = "var(--pink)";
-  quizAnswers.push({ question: QUIZ_QUESTIONS[quizStep].q, answer });
+  quizAnswers.push(opt);
   quizStep++;
   setTimeout(renderQuizStep, 300);
 }
-async function runAIQuiz() {
-  const container = document.getElementById('quiz-container');
-  container.innerHTML = `
-    <div style="text-align:center;padding:30px 0">
-      <div style="font-family:'Playfair Display',serif;font-size:40px;font-weight:900;font-style:italic;color:var(--ink);margin-bottom:12px">K</div>
-      <div style="font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--ink2)">AI подбирает процедуру...</div>
-    </div>
-  `;
+function runAIQuiz() {
+  // Calculate scores
+  const scores = {classic:0, lami:0, wispy:0, volume:0};
+  quizAnswers.forEach(function(opt) {
+    Object.keys(opt.s).forEach(function(k) { scores[k] += opt.s[k]; });
+  });
+  const winner = Object.keys(scores).sort(function(a,b){ return scores[b]-scores[a]; })[0];
+  const result = QUIZ_RESULTS[winner];
 
-  const answersText = quizAnswers.map((a,i) => `${i+1}. ${a.question} → ${a.answer}`).join("\n");
-  const prompt = `Ты эксперт салона Knyaga Lashes. Клиентка ответила:\n${answersText}\n\nВыбери ОДНУ процедуру:\n- Классика\n- 2D объём\n- 3D объём\n- 4D объём\n- Виспи / Аниме\n- Ламинирование ресниц\n- Ламинирование бровей\n\nОтветь только JSON:\n{"procedure":"название","emoji":"эмодзи","personal":"2 предложения почему эта процедура подходит ей, тепло и по-женски"}`;
-
-  let result = { procedure: "Классика", emoji: "✨", personal: "Классика — идеальный выбор для натурального и элегантного образа каждый день." };
-
-  try {
-    const res = await fetch("/api/quiz", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ answers: quizAnswers })
-    });
-    const json = await res.json();
-    if (json && json.procedure && json.personal) {
-      result = json;
-    }
-  } catch(e) {}
-
-  // Show AI result card
+  // Show result card
   document.getElementById('ai-result-card').style.display = 'block';
   document.getElementById('ai-result-emoji').textContent = result.emoji;
   document.getElementById('ai-result-name').textContent = result.procedure;
   document.getElementById('ai-result-personal').textContent = result.personal;
 
   // Auto-select service
-  const serviceId = SERVICE_MAP[result.procedure];
-  if (serviceId) { selService = serviceId; }
+  selService = result.serviceId;
 
   // Hide quiz, show form
   document.getElementById('quiz-section').style.display = 'none';
