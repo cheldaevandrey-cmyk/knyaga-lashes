@@ -1577,7 +1577,10 @@ async function runAIQuiz() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ answers: quizAnswers })
     });
-    result = await res.json();
+    const json = await res.json();
+    if (json && json.procedure && json.personal) {
+      result = json;
+    }
   } catch(e) {}
 
   // Show AI result card
