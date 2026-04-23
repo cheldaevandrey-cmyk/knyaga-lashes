@@ -1033,7 +1033,7 @@ nav button:hover:not(.active) { background: var(--pink2); }
 <div id="toast"></div>
 
 <script>
-const API    = '/.netlify/functions/store';
+const API    = '/api/store';
 const MY_KEY = 'crystal_nails_my_booking';
 let store    = null;
 
@@ -1540,29 +1540,23 @@ function renderQuizStep() {
   if (quizStep >= QUIZ_QUESTIONS.length) { runAIQuiz(); return; }
   const q = QUIZ_QUESTIONS[quizStep];
   const progress = ((quizStep + 1) / QUIZ_QUESTIONS.length * 100).toFixed(0);
-  container.innerHTML = `
-    <div style="margin:12px 0 8px">
-      <div style="height:3px;background:var(--pink2);border:1px solid var(--ink)">
-        <div style="height:100%;width:${progress}%;background:var(--ink);transition:width 0.4s"></div>
-      </div>
-      <div style="font-size:10px;color:var(--ink2);margin-top:4px;font-weight:700;letter-spacing:1px">${quizStep+1} / ${QUIZ_QUESTIONS.length}</div>
-    </div>
-    <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;margin:14px 0 16px;line-height:1.4">${q.q}</div>
-    <div style="display:flex;flex-direction:column;gap:8px">
-      ${q.opts.map(opt => `
-        <button onclick="quizAnswer('${opt.replace(/'/g,"\'")}', this)" style="background:var(--white);border:2px solid var(--ink);border-radius:10px;padding:13px 16px;text-align:left;font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s" onmouseover="this.style.background='var(--pink2)'" onmouseout="this.style.background='var(--white)'">${opt}</button>
-      `).join("")}
-    </div>
-  `;
+  container.innerHTML = '<div style="margin:12px 0 8px"><div style="height:3px;background:var(--pink2);border:1px solid var(--ink)"><div id="qpbar" style="height:100%;width:' + progress + '%;background:var(--ink);transition:width 0.4s"></div></div><div style="font-size:10px;color:var(--ink2);margin-top:4px;font-weight:700;letter-spacing:1px">' + (quizStep+1) + ' / ' + QUIZ_QUESTIONS.length + '</div></div><div style="font-family:\'Playfair Display\',serif;font-size:18px;font-weight:700;margin:14px 0 16px;line-height:1.4">' + q.q + '</div><div id="quiz-opts-container" style="display:flex;flex-direction:column;gap:8px"></div>';
+  q.opts.forEach(function(opt) {
+    var btn = document.createElement('button');
+    btn.textContent = opt;
+    btn.style.cssText = "background:var(--white);border:2px solid var(--ink);border-radius:10px;padding:13px 16px;text-align:left;font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;width:100%";
+    btn.onmouseover = function(){ this.style.background='var(--pink2)'; };
+    btn.onmouseout = function(){ this.style.background='var(--white)'; };
+    btn.onclick = function(){ quizAnswer(opt, this); };
+    document.getElementById('quiz-opts-container').appendChild(btn);
+  });
 }
-
 function quizAnswer(answer, btn) {
   btn.style.background = "var(--ink)"; btn.style.color = "var(--pink)";
   quizAnswers.push({ question: QUIZ_QUESTIONS[quizStep].q, answer });
   quizStep++;
   setTimeout(renderQuizStep, 300);
 }
-
 async function runAIQuiz() {
   const container = document.getElementById('quiz-container');
   container.innerHTML = `
