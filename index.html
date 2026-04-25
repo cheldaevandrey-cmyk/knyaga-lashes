@@ -1125,7 +1125,7 @@ async function refreshStore() {
 
 async function initApp() {
   await loadStore(); initCal(); renderCalendar(); renderPrices();
-  setInterval(refreshStore, 30000);
+  setInterval(refreshStore, 10000);
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') refreshStore();
   });
