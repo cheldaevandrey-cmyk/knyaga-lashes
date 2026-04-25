@@ -425,7 +425,7 @@ nav button:hover:not(.active) { background: var(--pink2); }
 .badge-cancelled { background: transparent; color: var(--ink2); }
 
 /* ---- ADMIN ---- */
-.admin-login { max-width: 320px; margin: 0 auto; text-align: center; }
+.admin-login { max-width: 320px; margin: 0 auto; text-align: center; padding-top: 0; }
 .admin-lock { font-size: 36px; margin-bottom: 12px; }
 .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 16px; }
 .admin-card {
@@ -1053,7 +1053,7 @@ function formatDateRu(dk) {
 function getDefaultStore() {
   const schedule = {};
   const today = new Date();
-  for (let i = 1; i <= 30; i++) {
+  for (let i = 1; i <= 60; i++) {
     const d = new Date(today);
     d.setDate(today.getDate() + i);
     if (d.getDay() !== 0) schedule[dateKey(d)] = { slots: ['11:30','14:30','18:00'], closed: false };
@@ -1085,9 +1085,10 @@ async function loadStore() {
     const data = await res.json();
     if (data && data.schedule) {
       store = data;
+      localStorage.setItem('crystal_nails_v2', JSON.stringify({ schedule: data.schedule, bookings: data.bookings, adminPass: data.adminPass }));
     } else {
-      store = getDefaultStore();
-      await saveCloudStore(store);
+      const raw = localStorage.getItem('crystal_nails_v2');
+      store = raw ? JSON.parse(raw) : getDefaultStore();
     }
   } catch(e) {
     const raw = localStorage.getItem('crystal_nails_v2');
@@ -1201,7 +1202,7 @@ function renderCalendar() {
   const firstDay = new Date(calYear, calMonth, 1);
   let startDow = firstDay.getDay(); startDow = startDow === 0 ? 6 : startDow - 1;
   const today = new Date(); today.setHours(0,0,0,0);
-  const maxDate = new Date(today); maxDate.setDate(today.getDate() + 30);
+  const maxDate = new Date(today); maxDate.setDate(today.getDate() + 60);
   const daysInMonth = new Date(calYear, calMonth+1, 0).getDate();
   for (let i = 0; i < startDow; i++) { const el = document.createElement('div'); el.className = 'cal-day empty'; grid.appendChild(el); }
   for (let d = 1; d <= daysInMonth; d++) {
