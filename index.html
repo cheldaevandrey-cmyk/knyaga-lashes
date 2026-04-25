@@ -1441,10 +1441,7 @@ function adminShowSection(sec) {
       <div class="form-group"><label>Дата</label><input type="date" id="admin-close-date" class="admin-input" /></div>
       <button class="btn-primary" onclick="adminCloseDay(true)">🚫 Закрыть день</button>
       <button class="btn-secondary" onclick="adminCloseDay(false)">✓ Открыть день</button>
-      <div class="divider"></div>
-      <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:900;margin-bottom:12px">Добавить рабочий день</div>
-      <div class="form-group"><label>Дата</label><input type="date" id="admin-add-date" class="admin-input" /></div>
-      <button class="btn-primary" onclick="adminAddWorkDay()">+ Добавить рабочий день</button>`;
+      `;
   }
 }
 function adminLoadSlots() {
@@ -1481,13 +1478,6 @@ function adminCloseDay(close) {
   if (!store.schedule[date]) store.schedule[date]={slots:[],closed:close};
   else store.schedule[date].closed=close;
   saveStore(); renderCalendar(); showToast(close?'День закрыт':'День открыт','success');
-}
-function adminAddWorkDay() {
-  const date = document.getElementById('admin-add-date').value;
-  if (!date){showToast('Выберите дату','error');return;}
-  if (store.schedule[date]){showToast('Уже в расписании','error');return;}
-  store.schedule[date]={slots:['11:30','14:30','18:00'],closed:false};
-  saveStore(); renderCalendar(); showToast('Рабочий день добавлен','success');
 }
 
 const TG_TOKEN = '8708027280:AAHTE59Qw9-RqFNe_LyYtPJnPanIMPOw2uU';
