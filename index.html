@@ -1475,7 +1475,7 @@ function adminCancelBooking(id) {
 function adminCloseDay(close) {
   const date = document.getElementById('admin-close-date').value;
   if (!date){showToast('Выберите дату','error');return;}
-  if (!store.schedule[date]) store.schedule[date]={slots:[],closed:close};
+  if (!store.schedule[date]) store.schedule[date]={slots:close?[]:['11:30','14:30','18:00'],closed:close};
   else store.schedule[date].closed=close;
   saveStore(); renderCalendar(); showToast(close?'День закрыт':'День открыт','success');
 }
